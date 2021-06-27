@@ -12,31 +12,34 @@ func sleep() {
 	)
 }
 
-func producter(ch chan<- *Item, name string) {
+func producter(ch chan<- *Item) {
 	for {
 		sleep()
 
 		n := rand.Intn(100)
 
-		fmt.Printf("Channel %s -> %d\n", name, n)
-		item := &Item{name: name, value: n}
-		ch <- item
+		var item Item
+		fmt.Printf("Producter %s -> %d\n", "A", n)
+		if n <= 50 {
+			item = Item{name: "BB", value: n}
+		} else {
+			item = Item{name: "CC", value: n}
+		}
+		ch <- &item
 	}
 }
 
-func consumer(ch <-chan *Item) {
+func consumer(ch <-chan *Item, name string) {
 	for item := range ch {
-		fmt.Printf("<- %d, from %s\n", item.value, item.name)
+		fmt.Printf("Consumer %s <- Item(%s, %d)\n", name, item.name, item.value)
 	}
 }
 
-func fanIn(chA, chB <-chan *Item, chC chan<- *Item) {
-	var item *Item
-	for {
-		select {
-		case item = <-chA:
-			chC <- item
-		case item = <-chB:
+func fanout(chA <-chan *Item, chB, chC chan<- *Item) {
+	for item := range chA {
+		if item.value <= 50 {
+			chB <- item
+		} else {
 			chC <- item
 		}
 	}
@@ -52,9 +55,9 @@ func main() {
 	chB := make(chan *Item)
 	chC := make(chan *Item)
 
-	go producter(chA, "A")
-	go producter(chB, "B")
-	go consumer(chC)
+	go producter(chA)
+	go consumer(chB, "B")
+	go consumer(chC, "C")
 
-	fanIn(chA, chB, chC)
+	fanout(chA, chB, chC)
 }
