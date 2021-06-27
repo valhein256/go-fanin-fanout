@@ -1,21 +1,17 @@
-# go-tree
+# go-fanin-fanout
+
+## run
+
+```shell
+$ > make run APP=fanin/fanin.go
+$ > make run APP=fanout/fanout.go
+```
 
 ## build
 
 ```shell
-$ > make build PLATFORM=<PLATFORM> STAGE=<STAGE>
+$ > make build
 ```
-
-Note:
-You can build for a specific platform by setting PLATFORM.
-PLATFORM:
-* local
-* linux
-* windows/amd64.
-You can build with config file by setting STAGE
-STAGE:
-* stg, for stg.go
-* prod, for prod.go
 
 ## Launch Develop Environment
 
